@@ -1,2 +1,2 @@
-# ros-to-huggingface
+# rosbag-to-huggingface
 Set of scripts to convert ROS bags to hugging face datasets.
