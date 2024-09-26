@@ -4,7 +4,7 @@ Set of scripts to convert ROS bags to hugging face datasets.
 
 ## Enviroment Setup
 
-### Install robostack
+### Option 1 - Install robostack (reccomended)
 0. Consider installing a python version management tool like [pyenv](https://github.com/pyenv/pyenv)
 1. Install [miniforge](https://github.com/conda-forge/miniforge)
 2. Install mamba: `conda install mamba -c conda-forge`
@@ -16,6 +16,9 @@ Set of scripts to convert ROS bags to hugging face datasets.
     - Remove the defaults channel: `conda config --env --remove channels defaults`
 6. Install ROS noetic: `mamba install ros-noetic-desktop`
 7. Install ROS dev tools: `mamba install compilers cmake pkg-config make ninja colcon-common-extensions catkin_tools rosdep`
+
+### Option 2 - Install ROS noetic (requires Ubuntu host OS - not reccommended unless already set up)
+0. https://wiki.ros.org/noetic/Installation/Ubuntu
 
 ### Install pip deps
 1. `pip install datasets opencv-python`
