@@ -18,7 +18,7 @@ import numpy as np
 
 
 ###############################################################################################################
-def process_odometry(msg: Message, time_stamp: Time) -> dict:
+def process_odometry(msg: Message, time_stamp: Time, extra_options: dict=None) -> dict:
     x = msg.pose.pose.position.x
     y = msg.pose.pose.position.y
     z = msg.pose.pose.position.z

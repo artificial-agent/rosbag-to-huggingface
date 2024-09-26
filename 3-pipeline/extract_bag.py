@@ -27,7 +27,7 @@ from tqdm import tqdm
 import numpy as np
 from datasets import Dataset, IterableDataset, Image
 # Internal Imports
-from rosbag_preprocess.data_handler import get_message_cols, process_message
+from rosbag_preprocess.data_handler import get_msg_cols, process_msg_csv, process_msg_img
 ###############################################################################################################
 
 
@@ -66,6 +66,7 @@ def extract_single(rosbag_abs_path: str, extraction_config: dict, output_dir: st
     rosbag_topics = [ topic_info["rosbag_topic"] for topic_info in extraction_config["data_schema"] ]
     output_dir_names = [ topic_info["output_dir"] for topic_info in extraction_config["data_schema"] ]
     csv_writers = {} # Dictionary to keep track of open CSV writers by topic type
+    img_writers = {}
     topic_msg_counts = {topic: 0 for topic in rosbag_topics} # Dictionary to keep track of the count of each topic
     bag_name = rosbag_abs_path.split("/")[-1][:-4]
 
@@ -81,8 +82,8 @@ def extract_single(rosbag_abs_path: str, extraction_config: dict, output_dir: st
 
                     # Only extract specified topics
                     if topic in rosbag_topics:
-                        topic_idx = topic_msg_counts[topic]
-                        topic_config = [ topic_info for topic_info in extraction_config["data_schema"] if topic_info["rosbag_topic"] == topic ][0] # do this up front for speedup
+                        topic_idx: int = topic_msg_counts[topic]
+                        topic_config: dict = [ topic_info for topic_info in extraction_config["data_schema"] if topic_info["rosbag_topic"] == topic ][0] # do this up front for speedup
 
                         # Conditionally extract msgs based on start, end, and throttle rate
                         if (topic_idx >= topic_config["start_idx"]) and (topic_idx < topic_config["end_idx"]) and (topic_idx % topic_config["throttle_rate"] == 0):
@@ -96,18 +97,22 @@ def extract_single(rosbag_abs_path: str, extraction_config: dict, output_dir: st
                                     csv_file = open(csv_file_path, 'w', newline='')
 
                                     # Initialize a CSV writer for this file
-                                    writer = csv.DictWriter(csv_file, get_message_cols(msg_type))
+                                    writer = csv.DictWriter(csv_file, get_msg_cols(msg_type))
                                     writer.writeheader() # Write the header (fields of the message)
                                     csv_writers[topic] = {"file": csv_file, "writer": writer, "msg_type": msg_type}
 
                                 # Process the message and write it to the corresponding CSV
-                                processed_data = process_message(msg_type, msg, time_stamp)
+                                processed_data = process_msg_csv(msg_type, msg, time_stamp, topic_config.get("extra_options", None))
                                 csv_writers[topic]["writer"].writerow(processed_data)
 
-                            elif topic_config["output_type"] == "dir_of_files":
-                                processed_data = process_message(msg_type, msg, time_stamp)
-                                # save()
+                            elif topic_config["output_type"] == "dir_of_imgs":
+                                if topic not in img_writers:
+                                    full_dir = f'{output_dir}/{bag_name}/{topic_config["output_dir"]}'
+                                    Path(full_dir).mkdir(parents=True, exist_ok=True)
+                                    img_writers[topic] = {"directory": full_dir, "msg_type": msg_type}
 
+                                processed_data = process_msg_img(msg_type, msg, time_stamp, topic_config.get("extra_options", None))
+                                processed_data["img"].save(f'{output_dir}/{bag_name}/{topic_config["output_dir"]}/{topic_msg_counts[topic]}.png', pnginfo=processed_data["img_metadata"])
 
                     # Bookkeeping
                     try:

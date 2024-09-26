@@ -18,7 +18,7 @@ import numpy as np
 
 
 ###############################################################################################################
-def process_twist(msg: Message, time_stamp: Time) -> dict:
+def process_twist(msg: Message, time_stamp: Time, extra_options: dict=None) -> dict:
     vx = msg.linear.x
     vy = msg.linear.y
     vz = msg.linear.z

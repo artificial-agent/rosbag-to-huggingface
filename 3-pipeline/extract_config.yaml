@@ -17,12 +17,11 @@ data_schema:
 
   - rosbag_topic: /husky/stereo_left/image_rect_color/compressed
     output_dir: img_stereo_left
-    output_type: dir_of_files
+    output_type: dir_of_imgs
     start_idx: 0
     end_idx: -1
     throttle_rate: 1
-    extra_params:
-      height: 440
-      width: 600
-      fps: 30
-
+    extra_options:
+      image_size:
+        height: 440
+        width: 600
