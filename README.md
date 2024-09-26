@@ -22,7 +22,7 @@ Set of scripts to convert ROS bags to hugging face datasets.
 
 
 ## Adding new messages
-1. Add an entry to the `data_schema` in `extract_config.yaml`
+1. Add an entry to the `data_schema` in `3-pipeline/extract_config.yaml`
     - Important! Specify the `output_type` of the topic; i.e. `csv`, `dir_of_imgs`, `dir_of_pcds`, etc.
 2. Update the according `data_handler` in `4-core/ros_bag_preprocess/data_handler.py` based on the decided `output_type`
     - If it is a csv, you must add the expected columns
