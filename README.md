@@ -18,8 +18,14 @@ Set of scripts to convert ROS bags to hugging face datasets.
 7. Install ROS dev tools: `mamba install compilers cmake pkg-config make ninja colcon-common-extensions catkin_tools rosdep`
 
 ### Install pip deps
-1. `pip install datasets`
+1. `pip install datasets opencv-python`
 
+## Using this repo
+1. The core script can be found in `3-pipeline/extract_bag.sh`
+    1. Update `PREFIX`, `BAGFILE`, `CONFIG`, and `OUTPUT_DIR` as needed.
+2. Topics to be extracted, and their settings are found in `3-pipeline/extract_config.yaml`
+    1. Edit as needed, adding new topics and editing their extraction settings.
+    2. If you would like to add a message that is not supported, you will have to add it (see below).
 
 ## Adding new messages
 1. Add an entry to the `data_schema` in `3-pipeline/extract_config.yaml`
