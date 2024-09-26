@@ -67,6 +67,7 @@ def extract_single(rosbag_abs_path: str, extraction_config: dict, output_dir: st
     hugface_names = [ topic_info["hugface_name"] for topic_info in extraction_config["data_schema"] ]
     csv_writers = {} # Dictionary to keep track of open CSV writers by topic type
     topic_msg_counts = {topic: 0 for topic in rosbag_topics} # Dictionary to keep track of the count of each topic
+    bag_name = rosbag_abs_path.split("/")[-1][:-4]
 
     #! Main Loop
     try:
@@ -90,7 +91,8 @@ def extract_single(rosbag_abs_path: str, extraction_config: dict, output_dir: st
                             if topic_config["output_type"] == "csv":
                                 if topic not in csv_writers:
                                     # Create a new CSV file for this message type
-                                    csv_file_path = Path(f'{output_dir}/{topic_config["hugface_name"]}.csv')
+                                    Path(f"{output_dir}/{bag_name}").mkdir(parents=True, exist_ok=True)
+                                    csv_file_path = Path(f'{output_dir}/{bag_name}/{topic_config["hugface_name"]}.csv')
                                     csv_file = open(csv_file_path, 'w', newline='')
 
                                     # Initialize a CSV writer for this file
@@ -121,8 +123,20 @@ def extract_single(rosbag_abs_path: str, extraction_config: dict, output_dir: st
             value["file"].close()
 
 
-def extract_all(args: dict, extraction_config: dict) -> None:
-    pass
+def extract_all(rosbag_abs_path: str, extraction_config: dict, output_dir: str) -> None:
+    #! Get list of bags
+    list_o_bags = [file for file in Path(rosbag_abs_path).glob('*.bag') if not file.name.startswith('.')]
+    # Sort the files by file size
+    list_o_bags.sort(key=lambda file: file.stat().st_size)
+    # Convert to str
+    list_o_bags = [str(file) for file in list_o_bags]
+    bag_names = [bag.split("/")[-1][:-4] for bag in list_o_bags]
+
+    #! Process each 1 by 1
+    for idx, rosbag_path in enumerate(list_o_bags):
+        print(f"Extracting bag # {idx}...")
+        extract_single(rosbag_path, extraction_config, output_dir)
+        print("...Completed!\n\n")
 
 
 ###############################################################################################################
