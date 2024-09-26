@@ -112,9 +112,6 @@ with rosbag.Bag(bagpath, "r") as bag:
     ds = Dataset.from_generator(commands_generator)
     ds.to_csv("hf-datasets/ros/spot_terrain/cmd_vel.csv")
 
-    ds = Dataset.from_generator(commands_generator)
-    ds.to_csv("hf-datasets/ros/spot_terrain/cmd_vel.csv")
-
     # ds = IterableDataset.from_generator(
     #     odom_generator, gen_kwargs={"gen": bag.read_messages(topics=["/odom"])}
     # )

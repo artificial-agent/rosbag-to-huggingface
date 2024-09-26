@@ -1,1 +1,5 @@
-# 3-pipeline/extract_bag.sh
+1-inputs/
+2-outputs/
+
+4-core/build
+4-core/rosbag_preprocess.egg-info
