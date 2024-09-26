@@ -65,7 +65,8 @@ def extract_single(rosbag_abs_path: str, extraction_config: dict, output_dir: st
     #! Setup
     rosbag_topics = [ topic_info["rosbag_topic"] for topic_info in extraction_config["data_schema"] ]
     hugface_names = [ topic_info["hugface_name"] for topic_info in extraction_config["data_schema"] ]
-    csv_writers = {} # Dictionary to keep track of open CSV writers by message types
+    csv_writers = {} # Dictionary to keep track of open CSV writers by topic type
+    topic_msg_counts = {topic: 0 for topic in rosbag_topics} # Dictionary to keep track of the count of each topic
 
     #! Main Loop
     try:
@@ -79,32 +80,39 @@ def extract_single(rosbag_abs_path: str, extraction_config: dict, output_dir: st
 
                     # Only extract specified topics
                     if topic in rosbag_topics:
-
-                        # Get object
+                        topic_idx = topic_msg_counts[topic]
                         topic_config = [ topic_info for topic_info in extraction_config["data_schema"] if topic_info["rosbag_topic"] == topic ][0] # do this up front for speedup
 
-                        #! Switch based on output type (csv, png, pcd, etc)
-                        if topic_config["output_type"] == "csv":
-                            if topic not in csv_writers:
-                                # Create a new CSV file for this message type
-                                csv_file_path = Path(f'{output_dir}/{topic_config["hugface_name"]}.csv')
-                                csv_file = open(csv_file_path, 'w', newline='')
+                        # Conditionally extract msgs based on start, end, and throttle rate
+                        if (topic_idx >= topic_config["start_idx"]) and (topic_idx < topic_config["end_idx"]) and (topic_idx % topic_config["throttle_rate"] == 0):
 
-                                # Initialize a CSV writer for this file
-                                writer = csv.DictWriter(csv_file, get_message_cols(msg_type))
-                                writer.writeheader() # Write the header (fields of the message)
-                                csv_writers[topic] = {"file": csv_file, "writer": writer, "msg_type": msg_type}
+                            #! Switch based on output type (csv, png, pcd, etc)
+                            if topic_config["output_type"] == "csv":
+                                if topic not in csv_writers:
+                                    # Create a new CSV file for this message type
+                                    csv_file_path = Path(f'{output_dir}/{topic_config["hugface_name"]}.csv')
+                                    csv_file = open(csv_file_path, 'w', newline='')
 
-                            # Process the message and write it to the corresponding CSV
-                            processed_data = process_message(msg_type, msg, time_stamp)
-                            csv_writers[topic]["writer"].writerow(processed_data)
+                                    # Initialize a CSV writer for this file
+                                    writer = csv.DictWriter(csv_file, get_message_cols(msg_type))
+                                    writer.writeheader() # Write the header (fields of the message)
+                                    csv_writers[topic] = {"file": csv_file, "writer": writer, "msg_type": msg_type}
 
-                        elif topic_config["output_type"] == "dir_of_files":
-                            processed_data = process_message(msg_type, msg, time_stamp)
-                            # save()
+                                # Process the message and write it to the corresponding CSV
+                                processed_data = process_message(msg_type, msg, time_stamp)
+                                csv_writers[topic]["writer"].writerow(processed_data)
+
+                            elif topic_config["output_type"] == "dir_of_files":
+                                processed_data = process_message(msg_type, msg, time_stamp)
+                                # save()
 
 
                     # Bookkeeping
+                    try:
+                        topic_msg_counts[topic] += 1
+                    except:
+                        topic_msg_counts[topic] = 1
+
                     progress_bar.update(1)
 
     finally:
@@ -132,6 +140,11 @@ if __name__ == "__main__":
             extraction_config = yaml.safe_load(stream)
         except yaml.YAMLError as exc:
             print(exc)
+
+    # Infer end idx
+    for topic_info in extraction_config["data_schema"]:
+        if topic_info["end_idx"] == -1:
+            topic_info["end_idx"] = int(9E15)
 
     # Infer if single bag or dir of bags & extract data
     if f"{args['bagfile']}"[-4:] == ".bag" :
