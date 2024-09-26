@@ -19,14 +19,11 @@ import numpy as np
 
 ###############################################################################################################
 def process_odometry(msg: Message, time_stamp: Time, extra_options: dict=None) -> dict:
-    x = msg.pose.pose.position.x
-    y = msg.pose.pose.position.y
-    z = msg.pose.pose.position.z
-
     qx = msg.pose.pose.orientation.x
     qy = msg.pose.pose.orientation.y
     qz = msg.pose.pose.orientation.z
     qw = msg.pose.pose.orientation.w
+
     theta = np.arctan2(2 * (qw * qz + qx * qy), 1 - 2 * (qy**2 + qz**2))
 
     vx = msg.twist.twist.linear.x
@@ -38,14 +35,25 @@ def process_odometry(msg: Message, time_stamp: Time, extra_options: dict=None) -
     wz = msg.twist.twist.angular.z
 
     return {
-        "time": time_stamp.to_sec(),
-        "x": x,
-        "y": y,
-        "z": z,
+        "seq": msg.header.seq,
+        "stamp": msg.header.stamp,
+        "frame_id": msg.header.frame_id,
+
+        "x": msg.pose.pose.position.x,
+        "y": msg.pose.pose.position.y,
+        "z": msg.pose.pose.position.z,
+
+        "qx": qx,
+        "qy": qy,
+        "qz": qz,
+        "qw": qw,
+
         "theta": theta,
+
         "vx": vx,
         "vy": vy,
         "vz": vz,
+
         "wx": wx,
         "wy": wy,
         "wz": wz,

@@ -28,11 +28,12 @@ def process_twist(msg: Message, time_stamp: Time, extra_options: dict=None) -> d
     wz = msg.angular.z
 
     return {
-        "id": "2022-12-14-08-02-07",
-        "time": time_stamp.to_sec(),
+        "stamp": time_stamp,
+
         "vx": vx,
         "vy": vy,
         "vz": vz,
+
         "wx": wx,
         "wy": wy,
         "wz": wz,

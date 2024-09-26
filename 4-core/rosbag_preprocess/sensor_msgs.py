@@ -26,7 +26,7 @@ cv_bridge = CvBridge()
 
 ###############################################################################################################
 
-
+# Images
 ###############################################################################################################
 def process_img(msg: Message, time_stamp: Time, extra_options: dict) -> dict:
     # So we dont have to keep instantiating
@@ -99,4 +99,25 @@ def resize_image_h_w(image_np: np.ndarray, width: int, height: int) -> np.ndarra
 
 ###############################################################################################################
 
+
+###############################################################################################################
+def process_gps(msg: Message, time_stamp: Time, extra_options: dict) -> dict:
+    return {
+        "seq": msg.header.seq,
+        "stamp": msg.header.stamp,
+        "frame_id": msg.header.frame_id,
+
+        "status": msg.status.status,
+        "service": msg.status.service,
+
+        "latitude": msg.latitude,
+        "longitude": msg.longitude,
+        "altitude": msg.altitude,
+
+        "position_covariance": msg.position_covariance,
+        "position_covariance_type": msg.position_covariance_type,
+    }
+
+
+###############################################################################################################
 # EOF

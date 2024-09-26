@@ -25,3 +25,10 @@ data_schema:
       image_size:
         height: 440
         width: 600
+
+  - rosbag_topic: /husky/gps
+    output_dir: gps
+    output_type: csv
+    start_idx: 0
+    end_idx: -1
+    throttle_rate: 1
