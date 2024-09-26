@@ -64,7 +64,7 @@ def parse_cmd_line() -> dict:
 def extract_single(rosbag_abs_path: str, extraction_config: dict, output_dir: str) -> None:
     #! Setup
     rosbag_topics = [ topic_info["rosbag_topic"] for topic_info in extraction_config["data_schema"] ]
-    hugface_names = [ topic_info["hugface_name"] for topic_info in extraction_config["data_schema"] ]
+    output_dir_names = [ topic_info["output_dir"] for topic_info in extraction_config["data_schema"] ]
     csv_writers = {} # Dictionary to keep track of open CSV writers by topic type
     topic_msg_counts = {topic: 0 for topic in rosbag_topics} # Dictionary to keep track of the count of each topic
     bag_name = rosbag_abs_path.split("/")[-1][:-4]
@@ -92,7 +92,7 @@ def extract_single(rosbag_abs_path: str, extraction_config: dict, output_dir: st
                                 if topic not in csv_writers:
                                     # Create a new CSV file for this message type
                                     Path(f"{output_dir}/{bag_name}").mkdir(parents=True, exist_ok=True)
-                                    csv_file_path = Path(f'{output_dir}/{bag_name}/{topic_config["hugface_name"]}.csv')
+                                    csv_file_path = Path(f'{output_dir}/{bag_name}/{topic_config["output_dir"]}.csv')
                                     csv_file = open(csv_file_path, 'w', newline='')
 
                                     # Initialize a CSV writer for this file
@@ -161,7 +161,7 @@ if __name__ == "__main__":
             topic_info["end_idx"] = int(9E15)
 
     # Infer if single bag or dir of bags & extract data
-    if f"{args['bagfile']}"[-4:] == ".bag" :
+    if f"{args['bagfile']}"[-4:] == ".bag":
         extract_single(args["bagfile"], extraction_config, args["output_dir"])
     else:
         extract_all(args["bagfile"], extraction_config, args["output_dir"])
