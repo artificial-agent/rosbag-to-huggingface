@@ -112,7 +112,7 @@ def extract_single(rosbag_abs_path: str, extraction_config: dict, output_dir: st
                                     img_writers[topic] = {"directory": full_dir, "msg_type": msg_type}
 
                                 processed_data = process_msg_img(msg_type, msg, time_stamp, topic_config.get("extra_options", None))
-                                processed_data["img"].save(f'{output_dir}/{bag_name}/{topic_config["output_dir"]}/{topic_msg_counts[topic]}.png', pnginfo=processed_data["img_metadata"])
+                                processed_data["img"].save(f'{output_dir}/{bag_name}/{topic_config["output_dir"]}/{processed_data["stamp"]}.png', pnginfo=processed_data["img_metadata"])
 
                     # Bookkeeping
                     try:

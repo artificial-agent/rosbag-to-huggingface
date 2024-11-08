@@ -11,6 +11,8 @@ sensor_msgs.py
 
 
 ###############################################################################################################
+# Core Imports
+from decimal import Decimal
 # External imports
 from genpy import Message, Time
 import numpy as np
@@ -46,11 +48,13 @@ def process_img(msg: Message, time_stamp: Time, extra_options: dict) -> dict:
     # Add metadata
     img_metadata = PngInfo()
     img_metadata.add_text("ros::seq", str(header.seq))
-    img_metadata.add_text("ros::stamp:secs", str(header.stamp.secs))
-    img_metadata.add_text("ros::stamp:nsecs", str(header.stamp.nsecs))
+    img_metadata.add_text("ros::stamp", str(header.stamp))
     img_metadata.add_text("ros::frame_id", str(header.frame_id))
 
     return{
+        "stamp": header.stamp,
+        "frame_id": header.frame_id,
+
         "img": pil_image,
         "img_metadata": img_metadata
     }
@@ -75,11 +79,13 @@ def process_compressed_img(msg: Message, time_stamp: Time, extra_options: dict) 
     # Add metadata
     img_metadata = PngInfo()
     img_metadata.add_text("ros::seq", str(header.seq))
-    img_metadata.add_text("ros::stamp:secs", str(header.stamp.secs))
-    img_metadata.add_text("ros::stamp:nsecs", str(header.stamp.nsecs))
+    img_metadata.add_text("ros::stamp", str(header.stamp))
     img_metadata.add_text("ros::frame_id", str(header.frame_id))
 
     return{
+        "stamp": header.stamp,
+        "frame_id": header.frame_id,
+
         "img": pil_image,
         "img_metadata": img_metadata
     }
