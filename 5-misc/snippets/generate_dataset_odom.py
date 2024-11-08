@@ -8,7 +8,7 @@ from datasets import Dataset
 import yaml
 
 
-# Load bag list from yaml file
+# Load bag list from yaml fil
 with open("baglist.yaml", "r") as f:
     baglist = yaml.load(f, Loader=yaml.FullLoader)
 
@@ -18,10 +18,8 @@ def odom_generator():
         for bagfile in data:
             filename = os.path.basename(bagfile)
             filename = os.path.splitext(filename)[0]
-
             with rosbag.Bag(bagfile, "r") as bag:
-
-                for topic, msg, t in bag.read_messages(topics=["/odom"]):
+                for topic, msg, t in bag.read_messages(topics=["/lester/odom"]):
                     x = msg.pose.pose.position.x
                     y = msg.pose.pose.position.y
                     z = msg.pose.pose.position.z
@@ -42,7 +40,7 @@ def odom_generator():
 
                     yield {
                         "id": filename,
-                        "terrain": key,
+                        # "terrain": key,
                         "time": t.to_sec(),
                         "x": x,
                         "y": y,
@@ -63,5 +61,5 @@ def odom_generator():
 
 ds = Dataset.from_generator(odom_generator)
 
-ds.push_to_hub("ajthor/spot_terrain_data", "odom", split="train")
+ds.push_to_hub("artificial-agent/great_outdoors_dataset", "odom", split="train", private=True)
 # ds.to_csv("odom.csv")

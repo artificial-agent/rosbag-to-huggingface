@@ -64,13 +64,9 @@ def image_raw_generator():
                     file_name = f"{count:08}.png"
                     count += 1
 
-                    # img_path = bagfile
-                    # img_path = os.path.splitext(img_path)[0]
                     target_dir = os.path.join("bev", "train")
                     img_path = os.path.join(target_dir, file_name)
-                    # img_path = os.path.join(*img_path.split(os.path.sep)[2:])
-                    # img_path = os.path.join("bev", img_path)
-
+                    
                     # Create the path if it doesn't exist
                     os.makedirs(target_dir, exist_ok=True)
 
@@ -92,4 +88,4 @@ target_dir = os.path.join("bev", "train")
 metadata.to_csv(os.path.join(target_dir, "metadata.csv"))
 
 ds = load_dataset("imagefolder", data_dir="bev")
-ds.push_to_hub("ajthor/spot_terrain_data", "bev")
+ds.push_to_hub("artificial-agent/great_outdoors_dataset", "bev", split="train", private=True)

@@ -21,7 +21,7 @@ def cmd_vel_generator():
 
             with rosbag.Bag(bagfile, "r") as bag:
 
-                for topic, msg, t in bag.read_messages(topics=["/cmd_vel"]):
+                for topic, msg, t in bag.read_messages(topics=["/lester/cmd_vel"]):
                     vx = msg.linear.x
                     vy = msg.linear.y
                     vz = msg.linear.z
@@ -32,7 +32,6 @@ def cmd_vel_generator():
 
                     yield {
                         "id": filename,
-                        "terrain": key,
                         "time": t.to_sec(),
                         "vx": vx,
                         "vy": vy,
@@ -45,5 +44,5 @@ def cmd_vel_generator():
 
 ds = Dataset.from_generator(cmd_vel_generator)
 
-# ds.push_to_hub("ajthor/spot_terrain_data", "cmd_vel", split="train")
+ds.push_to_hub("artificial-agent/great_outdoors_dataset", "cmd_vel", split="train", private=True)
 # ds.to_csv("odom.csv")
