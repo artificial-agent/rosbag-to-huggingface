@@ -5,7 +5,7 @@ artificial-agent
 09-25-2024
 """
 """
-extract_bag.py
+extract_bag_batch.py
 """
 """
 DESC:
@@ -38,21 +38,14 @@ def parse_cmd_line() -> dict:
     parser = ArgumentParser(usage='USAGE: extract_bag.py')
 
     # Setup args
-    parser.add_argument("--bagfile",    type=str,   default=f"canonical.bag",       help="Absolute location of rosbag")
     parser.add_argument("--config",     type=str,   default=f"extract_config.yaml", help="Absolute location of config file")
-    parser.add_argument("--output_dir", type=str,   default=f"2-outputs",           help="Directory to ouput data products")
 
     # Parse args
     args = parser.parse_args()
 
-    # Create output DIR if it does not exist
-    Path(args.output_dir).mkdir(parents=True, exist_ok=True)
-
     # Return
     return {
-        "bagfile": args.bagfile,
         "config": args.config,
-        "output_dir": args.output_dir
     }
 
 
@@ -128,19 +121,20 @@ def extract_single(rosbag_abs_path: str, extraction_config: dict, output_dir: st
             value["file"].close()
 
 
-def extract_all(rosbag_abs_path: str, extraction_config: dict, output_dir: str) -> None:
-    #! Get list of bags
-    list_o_bags = [file for file in Path(rosbag_abs_path).glob('*.bag') if not file.name.startswith('.')]
-    # Sort the files by file size
-    list_o_bags.sort(key=lambda file: file.stat().st_size)
-    # Convert to str
-    list_o_bags = [str(file) for file in list_o_bags]
-    bag_names = [bag.split("/")[-1][:-4] for bag in list_o_bags]
-
+def extract_all(extraction_config: dict) -> None:
     #! Process each 1 by 1
-    for idx, rosbag_path in enumerate(list_o_bags):
-        print(f"Extracting bag # {idx}...")
-        extract_single(rosbag_path, extraction_config, output_dir)
+    for idx, bag_info in enumerate(extraction_config['bag_list']):
+        # Construct extraction
+        bag_to_extract = f"{bag_info['input_dir_location']}/{bag_info['bagfile']}"
+        output_dir =  f"{bag_info['output_dir_location']}/{bag_info['name']}"
+
+        # Create output DIR if it does not exist
+        Path(output_dir).mkdir(parents=True, exist_ok=True)
+
+        print(f"Extracting bag # {idx} with name: {bag_to_extract} to dir: {output_dir}")
+
+        extract_single(bag_to_extract, extraction_config, output_dir)
+
         print("...Completed!\n\n")
 
 
@@ -165,11 +159,8 @@ if __name__ == "__main__":
         if topic_info["end_idx"] == -1:
             topic_info["end_idx"] = int(9E15)
 
-    # Infer if single bag or dir of bags & extract data
-    if f"{args['bagfile']}"[-4:] == ".bag":
-        extract_single(args["bagfile"], extraction_config, args["output_dir"])
-    else:
-        extract_all(args["bagfile"], extraction_config, args["output_dir"])
+
+    extract_all(extraction_config)
 
 
 ###############################################################################################################

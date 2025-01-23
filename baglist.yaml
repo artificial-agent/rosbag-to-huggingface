@@ -1,0 +1,4 @@
+DATASET_NAME_HERE:
+  - /global/location/to/bag/1.bag
+  - /global/location/to/bag/2.bag
+  - /global/location/to/bag/3.bag

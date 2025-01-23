@@ -14,49 +14,34 @@ nav_msgs.py
 # External imports
 from genpy import Message, Time
 import numpy as np
+# Internal Imports
+from rosbag_preprocess.helpers import format_value
 ###############################################################################################################
 
 
 ###############################################################################################################
 def process_odometry(msg: Message, time_stamp: Time, extra_options: dict=None) -> dict:
-    qx = msg.pose.pose.orientation.x
-    qy = msg.pose.pose.orientation.y
-    qz = msg.pose.pose.orientation.z
-    qw = msg.pose.pose.orientation.w
-
-    theta = np.arctan2(2 * (qw * qz + qx * qy), 1 - 2 * (qy**2 + qz**2))
-
-    vx = msg.twist.twist.linear.x
-    vy = msg.twist.twist.linear.y
-    vz = msg.twist.twist.linear.z
-
-    wx = msg.twist.twist.angular.x
-    wy = msg.twist.twist.angular.y
-    wz = msg.twist.twist.angular.z
-
     return {
         "seq": msg.header.seq,
         "stamp": msg.header.stamp,
         "frame_id": msg.header.frame_id,
 
-        "x": msg.pose.pose.position.x,
-        "y": msg.pose.pose.position.y,
-        "z": msg.pose.pose.position.z,
+        "x": format_value(msg.pose.pose.position.x, 16),
+        "y": format_value(msg.pose.pose.position.y, 16),
+        "z": format_value(msg.pose.pose.position.z, 16),
 
-        "qx": qx,
-        "qy": qy,
-        "qz": qz,
-        "qw": qw,
+        "qx": format_value(msg.pose.pose.orientation.x, 16),
+        "qy": format_value(msg.pose.pose.orientation.y, 16),
+        "qz": format_value(msg.pose.pose.orientation.z, 16),
+        "qw": format_value(msg.pose.pose.orientation.w, 16),
 
-        "theta": theta,
+        "vx": format_value(msg.twist.twist.linear.x, 16),
+        "vy": format_value(msg.twist.twist.linear.y, 16),
+        "vz": format_value(msg.twist.twist.linear.z, 16),
 
-        "vx": vx,
-        "vy": vy,
-        "vz": vz,
-
-        "wx": wx,
-        "wy": wy,
-        "wz": wz,
+        "wx": format_value(msg.twist.twist.angular.x, 16),
+        "wy": format_value(msg.twist.twist.angular.y, 16),
+        "wz": format_value(msg.twist.twist.angular.z, 16),
     }
 
 
