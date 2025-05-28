@@ -25,6 +25,10 @@ Set of scripts to convert ROS bags to hugging face datasets.
 ### Install pip deps
 1. `pip install datasets opencv-python`
 
+### Install core lib
+1. `cd ./4-core/rosbag_preprocess`
+2. `pip install .`
+
 ## Using this repo
 1. The core script can be found in `3-pipeline/extract_bag_batch.sh`
     1. Update `PREFIX`, and `CONFIG` as needed.
