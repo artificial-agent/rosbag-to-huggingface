@@ -4,7 +4,12 @@ bag_list:
 
   - name: BAG_ID_1
     input_dir_location: /Volumes/MY_VOLUME/MY_DATASET
-    bagfile: MY_DATASET.bag
+    bagfile: bag1.bag
+    output_dir_location: /Volumes/MY_VOLUME/MY_DATASET/raw-ouputs
+
+  - name: BAG_ID_2
+    input_dir_location: /Volumes/MY_VOLUME/MY_DATASET
+    bagfile: bag2.bag
     output_dir_location: /Volumes/MY_VOLUME/MY_DATASET/raw-ouputs
 
 data_schema:
