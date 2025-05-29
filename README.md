@@ -2,6 +2,7 @@
 Set of scripts to convert ROS bags to hugging face datasets.
 
 
+
 ## Enviroment Setup
 
 ### Option 1 - Install robostack (reccomended - this route does not require a specific OS)
