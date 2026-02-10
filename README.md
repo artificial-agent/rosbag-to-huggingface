@@ -24,10 +24,10 @@ Set of scripts to convert ROS bags to hugging face datasets.
 0. https://wiki.ros.org/noetic/Installation/Ubuntu
 
 ### Install pip deps
-1. `pip install datasets opencv-python`
+1. `pip install tqdm datasets`
 
 ### Install core lib
-1. `cd ./4-core/rosbag_preprocess`
+1. `cd ./4-core`
 2. `pip install .`
 
 ## Using this repo
